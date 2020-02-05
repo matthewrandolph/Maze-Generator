@@ -1,8 +1,11 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 public class GridScript : MonoBehaviour {
 
@@ -11,9 +14,15 @@ public class GridScript : MonoBehaviour {
     [SerializeField] private Transform[,] Grid;
 
     [SerializeField] private GameObject playerCharacter;
+    [SerializeField] private Text dropDownListLabel;
+    [SerializeField] private Dropdown dropDownList;
+    [SerializeField] private GameObject topDownMenu;
+    [SerializeField] private GameObject firstPersonMenu;
  
     // Use this for initialization
-    void Start () {
+    void Start ()
+    {
+        InitializeScene();
         CreateGrid();
         SetRandomNumbers();
         SetAdjacents();
@@ -25,7 +34,21 @@ public class GridScript : MonoBehaviour {
         //  evoke is canceled when we detect our maze is done.
         FindNext();
 	}
-    
+
+    private void InitializeScene()
+    {
+        Size.x = PlayerPrefs.GetFloat("size");
+        Size.z = Size.x;
+
+        dropDownList.value = PlayerPrefs.GetInt("value");
+        
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
+
+        topDownMenu.SetActive(true);
+        firstPersonMenu.SetActive(false);
+    }
+
     void CreateGrid()
     {
         Grid = new Transform[(int)Size.x, (int)Size.z];
@@ -200,9 +223,8 @@ public class GridScript : MonoBehaviour {
                     }
                 }
 
-                Destroy(Camera.main.gameObject);
-                Instantiate(playerCharacter, new Vector3(0,1,0), Quaternion.identity);
-                
+                //StartFirstPerson();
+
                 return;
             }
             // If we did not finish, then:
@@ -220,11 +242,31 @@ public class GridScript : MonoBehaviour {
         Invoke("FindNext", 0);
     }
 
+    public void StartFirstPerson()
+    {
+        Destroy(Camera.main.gameObject);
+        Instantiate(playerCharacter, new Vector3(0, 1, 0), Quaternion.identity);
+        
+        topDownMenu.SetActive(false);
+        firstPersonMenu.SetActive(true);
+    }
+
     private void Update()
     {
-        if(Input.GetKeyDown(KeyCode.F1))
+        if(Input.GetKeyDown(KeyCode.F1) || Input.GetKeyDown(KeyCode.N))
         {
-            SceneManager.LoadScene(0);
+            ReloadScene();
         }
+    }
+
+    public void ReloadScene()
+    {
+        SceneManager.LoadScene(1);
+    }
+
+    public void SetPlayerPrefs()
+    {
+        PlayerPrefs.SetFloat("size", Convert.ToSingle(dropDownListLabel.text));
+        PlayerPrefs.SetInt("value", dropDownList.value);
     }
 }

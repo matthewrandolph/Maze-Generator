@@ -10,6 +10,7 @@
       <e p="Assets" t="Include">
         <e p="CellScript.cs" t="Include" />
         <e p="GridScript.cs" t="Include" />
+        <e p="InitializeSettings.cs" t="Include" />
         <e p="Standard Assets" t="Include">
           <e p="Characters" t="Include">
             <e p="FirstPersonCharacter" t="Include">
